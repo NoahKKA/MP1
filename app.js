@@ -1,4 +1,4 @@
-let start = true;
+let start = false;
 const canvas = document.querySelector('#gamePage')
 const c = canvas.getContext('2d')
 function createGame(){
@@ -19,7 +19,8 @@ const keys = {
 let isJumping = false;
 let isGameOver = false;
 let newPlatBottom = 0;
-
+let score = 0;
+let firstJump = false;
 
 
 
@@ -30,8 +31,8 @@ let newPlatBottom = 0;
 class Player {
     constructor(){
         this.position = {
-            x: 0,
-            y: 0,
+            x: canvas.width/2 - 12.5,
+            y: canvas.height - 20,
         }
         this.velocity = {
             x: 0,
@@ -58,7 +59,6 @@ class Player {
             this.position.y = canvas.height - this.height;
             this.velocity.y = 0;
             this.canJump = true; // reset when player falls to the ground
-            isGameOver = true;
         }
         // check for jump
         if (isJumping && this.canJump) { // only allow jump if the player can jump
@@ -114,14 +114,31 @@ class SolidPlatform{
         update(){
             this.draw()
             this.checkCollisions()
-            this.bottom += .25
+            if(firstJump){
+            this.bottom += .375
+            }
+
+            //check if platform moved off canvas
+            if(this.bottom > canvas.height){
+                //remove platform from array
+                platforms.splice(platforms.indexOf(this), 1)
+
+                //create new platform at the top of canvas
+                let newPlatBottom = 0;
+                let lastPlatform = platforms[platforms.length - 1]
+                if(lastPlatform){
+                    newPlatBottom = lastPlatform.bottom - 30
+                }
+                let newPlatform = new SolidPlatform(newPlatBottom)
+                platforms.push(newPlatform)
+            }
         }
 
     }
-
+player1.get
 //creates SolidPlatform
 function solidPlatform(){
-    let startPlat = 5
+    let startPlat = 150
     for(let i = 0; i < 5; i++){
         let platGap = 30
         let newPlatBottom = startPlat + i * platGap
@@ -131,13 +148,10 @@ function solidPlatform(){
     }
 }
 solidPlatform()
-console.log(platforms)
-
 
 
 //player left and right movement and jump.
 function movment(){
-    
     //listens as to which key is pressed
     window.addEventListener('keydown', (event) => {
         if(event.key === 'd'){
@@ -148,6 +162,7 @@ function movment(){
         }
         if(event.key === ' '){
             isJumping = true;
+            firstJump = true;
         }
     })
     //listens to what key is depressed
@@ -161,21 +176,53 @@ function movment(){
     })
 }
 
-
-
-
 //get random number min - max
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+//adds one to score each second the game has not ended.
+function keepScore(){
+    if(!isGameOver){
+    setInterval(() => {
+        score++
+    }, 1000);
+    }
+    return score
+}
+
+function gameOver(){
+    if(firstJump && (player1.position.y + player1.height == canvas.height)){
+        platforms.forEach(function(plat){
+            if((!plat.bottom + 4 == player1.position.y + player1.height)){
+                isGameOver = true
+            }
+        })
+    } 
+}
+
+//makes it so game only starts when button is pressed
+let startBtn = document.querySelector('#start')
+startBtn.addEventListener('click', (event)=>{
+    if(!start){
+        start = true
+        main()
+        console.log(start)
+    }
+    if(start && isGameOver){
+        keepScore()
+    }
+})
 
 //canvas creation
 function main(){
     window.requestAnimationFrame(main)
     createGame()
     movment()
+    gameOver()
     player1.update()
+    console.log(score)
+    console.log(isGameOver)
 
     //draws platforms
     
@@ -191,5 +238,3 @@ function main(){
         player1.velocity.x = -1.5;
     }
 }
-console.log(canvas.getBoundingClientRect())
-main();
