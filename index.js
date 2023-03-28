@@ -1,6 +1,6 @@
 const canvas = document.querySelector('#gamePage')
 const c = canvas.getContext('2d')
-const gravity = .25;
+const gravity = .125;
 const keys = {
     d: {
         pressed: false,
@@ -11,6 +11,28 @@ const keys = {
     w: {
         pressed: false,
     },
+}
+const platforms = []
+
+
+class SolidPlatform {
+    constructor(change) {
+        this.y = change
+        this.width = getRandomNumber(15, 25);
+        this.height = 2.5;
+        this.x = getRandomNumber(50, 150);
+        this.collisions = false
+    }
+
+    drawPlatform() {
+            c.fillStyle = 'black';
+            c.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    updatePlatform() {
+        this.drawPlatform()
+        checkCollisions(player, this);
+    }
 }
 
 //made it into a class just incase I want to add more players.
@@ -44,9 +66,55 @@ class Player {
             this.velocity.y = 0
         }
     }
+
+    jump(){
+        setInterval(() => {
+            if (player.position.y + player.height >= canvas.height) {
+              player.velocity.y = -4;
+            }
+          }, 500);
+    }
 }
+
+
 //creates player
 const player = new Player()
+
+function createPlatforms (){
+    let platformHeight = 120
+    for(let i = 0; i < 4; i++){
+        let solidPlatform = new SolidPlatform(platformHeight)
+        platforms.push(solidPlatform)
+        platformHeight -= 30
+    }
+    if(player.position.y < 0){
+        platforms.shift()
+    }
+}
+createPlatforms()
+
+
+//checks for collisions
+function checkCollisions(player, platform){
+    let bottomPlayer = player.position.y + player.height
+    let topPlatform = platform.y 
+    
+    if(bottomPlayer >= topPlatform && player.position.y < topPlatform && player.position.x + 25 >= platform.x &&  player.position.x <= platform.x + platform.width) {
+         platform.collisions = true
+         player.position.y = topPlatform - player.height
+        }
+     else {
+        platform.collisions = false
+    }
+}
+
+
+function eachPlatform (){
+    platforms.forEach(function(plat) {
+        checkCollisions(player, plat)
+        console.log(platform.collisions)
+    })
+}
 
 let y = 20;
 function animate(){
@@ -55,6 +123,11 @@ function animate(){
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height)
     player.update()
+    for(let i = 0; i < platforms.length; i++){
+        platforms[i].updatePlatform(player)
+    }
+
+    player.jump()
 
     //makes player stop when keys are not pressed down
     player.velocity.x = 0
@@ -69,19 +142,11 @@ animate()
 
 //listens as to which key is pressed
 window.addEventListener('keydown', (event) => {
-    console.log(event)
     if(event.key === 'd'){
-        keys.d.pressed = true
+        keys.d.pressed = true;
     }
-    console.log(keys.d.pressed)
     if(event.key === 'a'){
         keys.a.pressed = true
-    }
-    if(event.key === 'w'){
-        //only jumps whilst not falling
-        if(player.velocity.y === 0){
-        player.velocity.y = -5
-        }
     }
 })
 //listens to what key is depressed
@@ -93,3 +158,8 @@ window.addEventListener('keyup', (event) => {
         keys.a.pressed = false
     }
 })
+
+
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
