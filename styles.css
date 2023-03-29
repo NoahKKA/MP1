@@ -3,6 +3,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
 }
 
 #gamePage {
@@ -11,4 +12,25 @@ body {
     
     width: 150vh;
     height: 100vh;
+
+}
+
+#start {
+    margin: auto;
+    background-color: #32cd32;
+    width: 12rem;
+    height: 5rem;
+    box-shadow: 3px 3px 6px #013220;
+    position: absolute;
+}
+
+#playAgain {
+    margin: auto;
+    visibility: hidden;
+    width: 12rem;
+    height: 5rem;
+    background-color: #32cd32;
+    box-shadow: 3px 3px 6px #013220;
+    position: absolute;
+    border: none;
 }

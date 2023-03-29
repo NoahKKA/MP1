@@ -20,7 +20,9 @@ let isJumping = false;
 let isGameOver = false;
 let newPlatBottom = 0;
 let score = 0;
+let x = 0;
 let firstJump = false;
+let startBtn = document.querySelector("#start")
 
 
 
@@ -73,6 +75,11 @@ class Player {
         if(this.position.x + 25 > canvas.width){
             this.position.x = canvas.width - 25
         }
+        //stops the player from jumping outside the canvas
+        if(this.position.y < -20){
+            this.velocity.y = gravity
+            this.position.y = -10;
+        }
     }    
 }
 
@@ -115,7 +122,13 @@ class SolidPlatform{
             this.draw()
             this.checkCollisions()
             if(firstJump){
-            this.bottom += .375
+                this.bottom += .375
+                if(score > 5){
+                    this.bottom += .001
+                }
+            }
+            if(isGameOver){
+                this.bottom = -10
             }
 
             //check if platform moved off canvas
@@ -139,7 +152,7 @@ player1.get
 //creates SolidPlatform
 function solidPlatform(){
     let startPlat = 150
-    for(let i = 0; i < 5; i++){
+    for(let i = 0; i < 7; i++){
         let platGap = 30
         let newPlatBottom = startPlat + i * platGap
 
@@ -192,49 +205,61 @@ function keepScore(){
 }
 
 function gameOver(){
-    if(firstJump && (player1.position.y + player1.height == canvas.height)){
-        platforms.forEach(function(plat){
-            if((!plat.bottom + 4 == player1.position.y + player1.height)){
-                isGameOver = true
-            }
+    if(firstJump && 
+    (player1.position.y + player1.height == canvas.height) &&
+    (platforms[0].bottom !== 150)){
+        isGameOver = true
+        start = false
+    }
+    if(isGameOver){
+        let playAgainBtn = document.querySelector('#playAgain')
+        playAgainBtn.style.visibility = "visible"
+        playAgainBtn.addEventListener('click', (event) => {
+            //make game start again
         })
-    } 
+    }
 }
 
+console.log(isGameOver)
 //makes it so game only starts when button is pressed
-let startBtn = document.querySelector('#start')
-startBtn.addEventListener('click', (event)=>{
-    if(!start){
-        start = true
-        main()
-        console.log(start)
-    }
-    if(start && isGameOver){
-        keepScore()
-    }
-})
-
-//canvas creation
-function main(){
-    window.requestAnimationFrame(main)
-    createGame()
-    movment()
-    gameOver()
-    player1.update()
-    console.log(score)
-    console.log(isGameOver)
-
-    //draws platforms
-    
-    platforms.forEach(function(plat){
-        plat.update()
+function startGame(){
+    startBtn.addEventListener('click', (event)=>{
+        if(!start){
+            start = true
+            main()
+            startBtn.style.visibility = 'hidden'
+        }
+        if(start && !isGameOver){
+            keepScore()
+        }
     })
-    // player left and right movement
-    player1.velocity.x = 0;
-    if (keys.d.pressed) {
-        player1.velocity.x = 1.5;
+}
+startGame()
+
+setInterval(() => {
+}, 5000);
+//canvas creation
+
+function main(){
+    function animate(){
+        window.requestAnimationFrame(animate)
+        createGame()
+        movment()
+        gameOver()
+        player1.update()
+
+        //draws platforms
+        platforms.forEach(function(plat){
+            plat.update()
+        })
+        // player left and right movement
+        player1.velocity.x = 0;
+        if (keys.d.pressed) {
+            player1.velocity.x = 1.5;
+        }
+        if (keys.a.pressed) {
+            player1.velocity.x = -1.5;
+        }
     }
-    if (keys.a.pressed) {
-        player1.velocity.x = -1.5;
-    }
+    animate()
 }
