@@ -18,8 +18,8 @@ body {
 #start {
     margin: auto;
     background-color: #32cd32;
-    width: 12rem;
-    height: 5rem;
+    width: 24rem;
+    height: 10rem;
     box-shadow: 3px 3px 6px #013220;
     position: absolute;
 }

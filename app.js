@@ -1,10 +1,13 @@
 let start = false;
 const canvas = document.querySelector('#gamePage')
 const c = canvas.getContext('2d')
+let backgroundImg = new Image()
 function createGame(){
-    c.fillStyle = 'white'
+    let pattern = c.createPattern(backgroundImg, 'repeat')
+    c.fillStyle = pattern
     c.fillRect(0, 0, canvas.width, canvas.height)
 }
+backgroundImg.src = './assets/backgroundimg.webp'
 const gravity = .125;
 let platforms = []
 let y = 20;
@@ -18,15 +21,13 @@ const keys = {
 }
 let isJumping = false;
 let isGameOver = false;
-let onPlatform = false;
 let newPlatBottom = 0;
 let score = 0;
-let x = 0;
+let hasLandedOnPlatform = false;
 let firstJump = false;
 let startBtn = document.querySelector("#start")
-
-
-
+let movePlatform = .375
+let x = 5;
 
 
 
@@ -91,6 +92,8 @@ class SolidPlatform{
     constructor(newPlatBottom){
         this.bottom = newPlatBottom
         this.left = getRandomNumber(75,200)
+        this.hasLandedOnPlatform = hasLandedOnPlatform
+        this.onPlatform = false;
     }
 
 
@@ -111,25 +114,22 @@ class SolidPlatform{
                     player1.position.y = this.bottom - player1.height;
                     isJumping = false;
                     player1.canJump = true; // set to true when player lands on platform
-                    onPlatform = true;
+                    this.onPlatform = true
+                    
                 } else if (player1.velocity.y > 0 && player1.position.y + player1.height <= this.bottom + 4) {
                     player1.velocity.y = 0;
                     player1.position.y = this.bottom - player1.height;
                     player1.canJump = true; // set to true when player lands on platform
-                    onPlatform = true
+                    this.onPlatform = true;
                 }
             }
         }
 
         update(){
-            let movePlatform = .375
             this.draw()
             this.checkCollisions()
             if(firstJump){
                 this.bottom += movePlatform
-                if(score > 5){
-                    this.bottom += .001
-                }
             }
             if(isGameOver){
                 this.bottom = -10
@@ -149,10 +149,16 @@ class SolidPlatform{
                 let newPlatform = new SolidPlatform(newPlatBottom)
                 platforms.push(newPlatform)
             }
+            if(!this.hasLandedOnPlatform && this.onPlatform){
+                console.log('im on platform')
+                score++
+                this.hasLandedOnPlatform = true
+                console.log(hasLandedOnPlatform)
+            }
         }
 
     }
-player1.get
+
 //creates SolidPlatform
 function solidPlatform(){
     let startPlat = 150
@@ -199,12 +205,23 @@ function getRandomNumber(min, max) {
   }
 
 
+function increaseMovePlatform(){
+    setInterval(() => {
+        if(score === x){
+        movePlatform += 0.0625
+        x+=5
+        console.log(movePlatform)
+    }
+    }, 1000);
+}
+
 function gameOver(){
     if(firstJump && 
     (player1.position.y + player1.height == canvas.height) &&
     (platforms[0].bottom !== 150)){
         isGameOver = true
         start = false
+        firstJump = false;
     }
     if(isGameOver){
         //starts game again and resets everything
@@ -214,7 +231,9 @@ function gameOver(){
             isGameOver = false;
             score = 0;
             platforms = [];
+            start = true;
             solidPlatform();
+            movePlatform = 0.375
             player1.position = {
               x: canvas.width/2 - 12.5,
               y: canvas.height - 20,
@@ -224,21 +243,10 @@ function gameOver(){
               y: 1,
             }
             player1.canJump = true;
-            firstJump = false;
+            
             playAgainBtn.style.visibility = "hidden"
-          });
-
+        })
     }
-}
-
-function keepScore(){
-    setInterval(() => {
-        if(onPlatform){
-        score++
-        onPlatform = false;
-    }
-    }, 500);
-    
 }
 
 //makes it so game only starts when button is pressed
@@ -250,7 +258,7 @@ function startGame(){
             startBtn.style.visibility = 'hidden'
         }
         if(start && !isGameOver){
-            keepScore()
+            increaseMovePlatform()
         }
     })
 }
@@ -263,11 +271,11 @@ setInterval(() => {
 function main(){
     function animate(){
         window.requestAnimationFrame(animate)
+        
         createGame()
         movment()
         gameOver()
         player1.update()
-
         //draws platforms
         platforms.forEach(function(plat){
             plat.update()
