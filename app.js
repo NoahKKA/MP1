@@ -1,13 +1,14 @@
 let start = false;
 const canvas = document.querySelector('#gamePage')
 const c = canvas.getContext('2d')
-let backgroundImg = new Image()
+// let backgroundImg = new Image()
 function createGame(){
-    let pattern = c.createPattern(backgroundImg, 'repeat')
-    c.fillStyle = pattern
-    c.fillRect(0, 0, canvas.width, canvas.height)
+    // c.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height)
 }
-backgroundImg.src = './assets/backgroundimg.webp'
+// backgroundImg.src = './assets/background.png'
+const playerImg = new Image()
+const jumpPlayerImg = new Image()
+const fallPlayerImg = new Image()
 const gravity = .125;
 let platforms = []
 let y = 20;
@@ -26,8 +27,11 @@ let score = 0;
 let hasLandedOnPlatform = false;
 let firstJump = false;
 let startBtn = document.querySelector("#start")
+let gameTitle = document.querySelector('#gameTitle')
 let movePlatform = .375
 let x = 5;
+
+const scores = []
 
 
 
@@ -42,14 +46,20 @@ class Player {
             x: 0,
             y: 1,
         }
-        this.height = 20
+        this.height = 25
+        this.width = 30
         this.canJump = true;
+        this.isImageLoaded = false;
+        this.playerImage = playerImg
     }
 
     draw() {
-        c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, 25, this.height)
-        y++
+        // c.fillStyle = 'red'
+        // c.fillRect(this.position.x, this.position.y, 25, this.height)
+        // y++
+        if(this.isImageLoaded){
+            c.drawImage(this.playerImage, this.position.x, this.position.y, this.width, this.height)
+        }
     }
 
     update() {
@@ -74,40 +84,75 @@ class Player {
         if(this.position.x < 0){
             this.position.x = 0
         }
-        if(this.position.x + 25 > canvas.width){
-            this.position.x = canvas.width - 25
+        if(this.position.x + this.width > canvas.width){
+            this.position.x = canvas.width - this.width
         }
         //stops the player from jumping outside the canvas
-        if(this.position.y < -20){
+        if(this.position.y < -15){
             this.velocity.y = gravity
             this.position.y = -10;
         }
+        // playerSprites()
     }    
 }
 
 //creating Player
 const player1 = new Player()
 
+playerImg.onload = function(){
+    player1.isImageLoaded = true;
+}
+playerImg.src = "./assets/Blueplayer.png"
+
+jumpPlayerImg.onload = function(){
+    player1.isImageLoaded = true;
+}
+jumpPlayerImg.src = "./assets/JumpBluePlayer.png"
+
+fallPlayerImg.onload = function(){
+    player1.isImageLoaded = true;
+}
+fallPlayerImg.src = "./assets/SquishBluePlayer.png"
+
+function playerSprites(){
+    for(let i = 0; i < platforms.length; i++){
+        if(platforms[i].onPlatform){
+            player1.playerImage = fallPlayerImg
+        }
+    }
+    if(player1.isJumping){
+        player1.playerImage = jumpPlayerImg
+    }
+    else{
+        player1.playerImage = playerImg
+    }
+}
+
+
+
+
 class SolidPlatform{
     constructor(newPlatBottom){
         this.bottom = newPlatBottom
-        this.left = getRandomNumber(75,200)
+        this.left = getRandomNumber(50,225)
         this.hasLandedOnPlatform = hasLandedOnPlatform
         this.onPlatform = false;
+        this.width = 43;
+        this.height = 4;
     }
 
 
         draw(){
             c.fillStyle = 'black'
-            c.fillRect(this.left, this.bottom, 35, 4)
+            c.fillRect(this.left, this.bottom, this.width, this.height)
         }
 
         checkCollisions(){
             if (
                 player1.position.y + player1.height >= this.bottom &&
-                player1.position.y + player1.height <= this.bottom + 4 &&
-                player1.position.x + 25 >= this.left &&
-                player1.position.x <= this.left + 35
+                player1.position.y + player1.height <= this.bottom + this.height &&
+                player1.position.x + player1.width >= this.left &&
+                player1.position.x <= this.left + this.width
             ) {
                 if (isJumping) {
                     player1.velocity.y = 0;
@@ -116,7 +161,7 @@ class SolidPlatform{
                     player1.canJump = true; // set to true when player lands on platform
                     this.onPlatform = true
                     
-                } else if (player1.velocity.y > 0 && player1.position.y + player1.height <= this.bottom + 4) {
+                } else if (player1.velocity.y > 0 && player1.position.y + player1.height <= this.bottom + this.height) {
                     player1.velocity.y = 0;
                     player1.position.y = this.bottom - player1.height;
                     player1.canJump = true; // set to true when player lands on platform
@@ -144,16 +189,27 @@ class SolidPlatform{
                 let newPlatBottom = 0;
                 let lastPlatform = platforms[platforms.length - 1]
                 if(lastPlatform){
-                    newPlatBottom = lastPlatform.bottom - 30
+                    newPlatBottom = lastPlatform.bottom - 35
                 }
                 let newPlatform = new SolidPlatform(newPlatBottom)
+                console.log(newPlatform)
                 platforms.push(newPlatform)
             }
             if(!this.hasLandedOnPlatform && this.onPlatform){
-                console.log('im on platform')
                 score++
                 this.hasLandedOnPlatform = true
-                console.log(hasLandedOnPlatform)
+            }
+            if(score === x){
+                movePlatform += 0.0625
+                x+=5
+            }
+            player1.playerImage = playerImg
+            if(this.onPlatform){
+                player1.playerImage = fallPlayerImg
+            } else if(player1.velocity !== 0 ){
+                player1.playerImage = jumpPlayerImg
+            } else {
+                player1.playerImage = playerImg
             }
         }
 
@@ -163,7 +219,7 @@ class SolidPlatform{
 function solidPlatform(){
     let startPlat = 150
     for(let i = 0; i < 7; i++){
-        let platGap = 30
+        let platGap = 35
         let newPlatBottom = startPlat + i * platGap
 
         let newPlatform = new SolidPlatform(newPlatBottom)
@@ -210,7 +266,6 @@ function increaseMovePlatform(){
         if(score === x){
         movePlatform += 0.0625
         x+=5
-        console.log(movePlatform)
     }
     }, 1000);
 }
@@ -232,6 +287,7 @@ function gameOver(){
             score = 0;
             platforms = [];
             start = true;
+            x = 5;
             solidPlatform();
             movePlatform = 0.375
             player1.position = {
@@ -243,7 +299,7 @@ function gameOver(){
               y: 1,
             }
             player1.canJump = true;
-            
+            document.querySelector('#score').style.visibility = 'hidden'
             playAgainBtn.style.visibility = "hidden"
         })
     }
@@ -256,17 +312,44 @@ function startGame(){
             start = true
             main()
             startBtn.style.visibility = 'hidden'
+            gameTitle.style.visibility = 'hidden'
         }
         if(start && !isGameOver){
-            increaseMovePlatform()
         }
     })
 }
 startGame()
 
 setInterval(() => {
+    console.log(movePlatform)
+    console.log("player y + height " + player1.position.y + player1.height)
+    console.log("player x " + player1.position.x)
+}, 500);
+
+setInterval(() => {
     console.log(score)
 }, 1000);
+
+function showScore(){
+    let scoreText = document.querySelector('#score')
+    if(isGameOver){
+        scoreText.style.visibility = 'visible'
+        scoreText.innerHTML = "SCORE " + score
+    }
+}
+
+function getHighScore(scoreArr){
+    if(gameOver){
+    let highestScoreNum = scoreArr.reduce(function(a,b) {
+        return Math.max(a, b)
+    })
+    return highestScoreNum
+    }
+    if(scoreText.style.visibility === 'visible'){
+
+    }
+}
+
 
 function main(){
     function animate(){
@@ -276,6 +359,7 @@ function main(){
         movment()
         gameOver()
         player1.update()
+        showScore()
         //draws platforms
         platforms.forEach(function(plat){
             plat.update()
