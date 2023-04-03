@@ -12,7 +12,6 @@ body {
     
     width: 150vh;
     height: 100vh;
-    background-image: url('./assets/background.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center
@@ -28,6 +27,7 @@ body {
     top: 55%;
     font-size: 4rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border-radius: 25px;
 }
 
 #playAgain {
@@ -41,7 +41,7 @@ body {
     top: 55%;
     font-size: 4rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    border: none;
+    border-radius: 25px;
 }
 
 
@@ -58,12 +58,36 @@ body {
 
 #score {
     position: absolute;
-    top:30%;
+    top:40%;
     margin: auto;
-    color: #DAA520;
+    color: #fc0345;
+    background-color: black;
+    border-radius: 25px;
     text-align: center;
     font-size: 5rem;
     letter-spacing: .25rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    visibility: hidden;
+}
+
+#high-score {
+    position: absolute;
+    top:30%;
+    margin: auto;
+    color: #fc0345;
+    background-color: black;
+    border-radius: 25px;
+    text-align: center;
+    font-size: 5rem;
+    letter-spacing: .25rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    visibility: hidden;
+}
+
+#new-high-score {
+    position: absolute;
+    top: 20%;
+    font-size: 3rem;
+    color: #8B0000;
     visibility: hidden;
 }
