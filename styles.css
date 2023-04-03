@@ -86,8 +86,12 @@ body {
 
 #new-high-score {
     position: absolute;
-    top: 20%;
+    top: 18%;
     font-size: 3rem;
+    letter-spacing: .2rem;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: orange;
+    border-radius: 25px;
     color: #8B0000;
     visibility: hidden;
 }

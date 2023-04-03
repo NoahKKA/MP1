@@ -15,7 +15,7 @@ backgroundImg.src = './assets/background.png'
 const playerImg = new Image()
 const jumpPlayerImg = new Image()
 const fallPlayerImg = new Image()
-const gravity = .2625;
+const gravity = .2635;
 let platforms = []
 let y = 20;
 const keys = {
@@ -49,7 +49,7 @@ class Player {
         }
         this.velocity = {
             x: 0,
-            y: 1,
+            y: -1,
         }
         this.height = 75
         this.width = 90
@@ -123,7 +123,7 @@ fallPlayerImg.src = "./assets/SquishBluePlayer.png"
 class SolidPlatform{
     constructor(newPlatBottom){
         this.bottom = newPlatBottom
-        this.left = getRandomNumber(150,1080)
+        this.left = getRandomNumber(230,1000)
         this.hasLandedOnPlatform = hasLandedOnPlatform
         this.onPlatform = false;
         this.width = 150;
@@ -188,7 +188,7 @@ class SolidPlatform{
                 this.hasLandedOnPlatform = true
             }
             if(score === x){
-                movePlatform += 0.0625
+                movePlatform += 0.135
                 x+=5
             }
             if(player1.position.y == 0){
@@ -206,8 +206,8 @@ class SolidPlatform{
 
 //creates SolidPlatform
 function solidPlatform(){
-    let startPlat = 120
-    for(let i = 7; i > 0; i--){
+    let startPlat = 0
+    for(let i = 8; i > 0; i--){
         let platGap = 120
         let newPlatBottom = startPlat + i * platGap
 
@@ -281,6 +281,7 @@ function gameOver(){
             player1.canJump = true;
             document.querySelector('#score').style.visibility = 'hidden'
             document.querySelector('#high-score').style.visibility = 'hidden'
+            document.querySelector('#new-high-score').style.visibility = 'hidden'
             playAgainBtn.style.visibility = "hidden"
         })
     }
@@ -295,6 +296,7 @@ function startGame(){
             canvas.style.backgroundImage = "url('./assets/background.png')"
             startBtn.style.visibility = 'hidden'
             gameTitle.style.visibility = 'hidden'
+
         }
     })
 }
@@ -320,7 +322,7 @@ function showScore(){
         scoreText.style.visibility = 'visible'
         
         scoreText.innerHTML = "SCORE " + score
-        highScoreText.innerHTML = "HIGHSCORE " + getHighScore(scores)
+        highScoreText.innerHTML = "HIGHSCORE " + highScore
     }
 }
 
@@ -329,14 +331,18 @@ function getHighScore(scoreArr){
     let highestScoreNum = scoreArr.reduce(function(a,b) {
         return Math.max(a, b)
     })
-    return highestScoreNum
+    if(highestScoreNum>highScore){
+        highScore = highestScoreNum
+        document.querySelector('#new-high-score').style.visibility = 'visible'
     }
-    if(scoreText.style.visibility === 'visible'){
-
     }
 }
 
 
+
+setInterval(() => {
+    console.log(getHighScore(scores))
+}, 100);
 function main(){
     function animate(){
         window.requestAnimationFrame(animate)
@@ -345,6 +351,7 @@ function main(){
         gameOver()
         player1.update()
         showScore()
+        getHighScore(scores)
         //draws platforms
         platforms.forEach(function(plat){
             plat.update()
