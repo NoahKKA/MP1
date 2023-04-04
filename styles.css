@@ -39,7 +39,7 @@ body {
     background-color: #32cd32;
     box-shadow: 3px 3px 6px #013220;
     position: absolute;
-    top: 55%;
+    top: 48rem;
     font-size: 4rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     border-radius: 25px;
@@ -59,7 +59,7 @@ body {
 
 #score {
     position: absolute;
-    top:40%;
+    top: 41rem;
     margin: auto;
     color: #fc0345;
     background-color: black;
@@ -73,7 +73,7 @@ body {
 
 #high-score {
     position: absolute;
-    top:30%;
+    top:34rem;
     margin: auto;
     color: #fc0345;
     background-color: black;
@@ -87,7 +87,7 @@ body {
 
 #new-high-score {
     position: absolute;
-    top: 18%;
+    top: 25rem;
     font-size: 3rem;
     letter-spacing: .2rem;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
