@@ -15,7 +15,7 @@ backgroundImg.src = './assets/background.png'
 const playerImg = new Image()
 const jumpPlayerImg = new Image()
 const fallPlayerImg = new Image()
-const gravity = .2635;
+const gravity = 0.2635;
 let platforms = []
 let y = 20;
 const keys = {
@@ -37,6 +37,9 @@ let gameTitle = document.querySelector('#gameTitle')
 let movePlatform = 1.5
 let x = 5;
 let highScore = 0;
+let squishSound = new Audio("./assets/squishSound.mp3")
+let jumpSound = new Audio("./assets/jumpSound.mp3")
+
 
 const scores = [0]
 
@@ -52,7 +55,7 @@ class Player {
             y: -1,
         }
         this.height = 75
-        this.width = 90
+        this.width = 80
         this.canJump = true;
         this.isImageLoaded = false;
         this.playerImage = playerImg
@@ -98,7 +101,7 @@ class Player {
             this.position.y = -10;
         }
         // playerSprites()
-    }    
+    }
 }
 
 //creating Player
@@ -132,7 +135,7 @@ class SolidPlatform{
 
 
         draw(){
-            c.fillStyle = 'black'
+            c.fillStyle = "black"
             c.fillRect(this.left, this.bottom, this.width, this.height)
         }
 
@@ -149,7 +152,7 @@ class SolidPlatform{
                     isJumping = false;
                     player1.canJump = true; // set to true when player lands on platform
                     this.onPlatform = true
-                    
+
                 } else if (player1.velocity.y > 0 && player1.position.y + player1.height <= this.bottom + this.height) {
                     player1.velocity.y = 0;
                     player1.position.y = this.bottom - (player1.height - movePlatform);
@@ -191,18 +194,38 @@ class SolidPlatform{
                 movePlatform += 0.135
                 x+=5
             }
-            if(player1.position.y == 0){
-                player1.playerImage = playerImg
-            }
-            if(player1.velocity.y == 0){
-                player1.playerImage = fallPlayerImg
-            }
-            if(player1.velocity.y !== 0){
-                player1.playerImage = jumpPlayerImg
-            }
+            spriteChange()
+            playSound(this)
         }
 
     }
+
+
+function spriteChange(){
+    if(player1.velocity.y == 0){
+        player1.playerImage = fallPlayerImg
+    }
+    if(player1.velocity.y !== 0){
+        player1.playerImage = jumpPlayerImg
+        squishSound.stop
+    }
+    if(player1.position.y == 0){
+        player1.playerImage = playerImg
+    }
+}
+
+function playSound(platform){
+    if(player1.playerImage == fallPlayerImg && !isGameOver && firstJump){
+        squishSound.playbackRate = 1.75
+        squishSound.volume = 0.5
+        squishSound.play()
+        if(platform.hasLandedOnPlatform){
+            squishSound.pause()
+            squishSound.currentTime = 0
+    }
+    }
+    
+}
 
 //creates SolidPlatform
 function solidPlatform(){

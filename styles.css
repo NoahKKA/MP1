@@ -25,6 +25,7 @@ body {
     box-shadow: 3px 3px 6px #013220;
     position: absolute;
     top: 55%;
+    bottom:55%;
     font-size: 4rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     border-radius: 25px;
