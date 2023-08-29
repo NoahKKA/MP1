@@ -1,0 +1,86 @@
+$background-color: #999999;
+$backgroundStart-color: #32cd32;
+
+body {
+    background-color: $background-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+#gamePage {
+    display: block;
+    margin: auto;
+
+    width: 150vh;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#start, #playAgain {
+    margin: auto;
+    background-color: $backgroundStart-color;
+    width: 24rem;
+    height: 10rem;
+    box-shadow: 3px 3px 6px #013220;
+    position: absolute;
+    font-size: 4rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border-radius: 25px;
+}
+
+#start {
+    top: 55%;
+    bottom: 55%;
+}
+
+#playAgain {
+    top: 48rem;
+    visibility: hidden;
+}
+
+#gameTitle {
+    position: absolute;
+    top: 20%;
+    font-size: 7rem;
+    font-style: italic;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color: #8B0000;
+    border-bottom: 4px double black;
+}
+
+#score, #high-score {
+    position: absolute;
+    margin: auto;
+    color: #fc0345;
+    background-color: black;
+    border-radius: 25px;
+    text-align: center;
+    font-size: 5rem;
+    letter-spacing: 0.25rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    visibility: hidden;
+}
+
+#score {
+    top: 41rem;
+}
+
+#high-score {
+    top: 34rem;
+}
+
+#new-high-score {
+    position: absolute;
+    top: 25rem;
+    font-size: 3rem;
+    letter-spacing: 0.2rem;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: orange;
+    border-radius: 25px;
+    color: #8B0000;
+    visibility: hidden;
+}
